@@ -1,0 +1,47 @@
+Vagrant.configure("2") do |config|
+
+  # Provider Virtualbox
+  config.vm.define "local", primary: true do |local_config|
+    local_config.vm.box = "ubuntu/trusty32"
+    local_config.vm.box_url = "http://files.vagrantup.com/precise64.box"
+    local_config.vm.synced_folder ".", "/vagrant"
+    local_config.vm.network :forwarded_port, host: 8080, guest: 80
+    local_config.vm.network :forwarded_port, host: 5433, guest: 5432
+    local_config.vm.network :forwarded_port, host: 20008, guest: 20008
+    local_config.vm.network :forwarded_port, host: 20009, guest: 20009
+
+    local_config.vm.provider :virtualbox do |vb|
+      vb.customize ["modifyvm", :id, "--cpuexecutioncap", "60"]
+      vb.memory = 1300
+    end
+
+    local_config.vm.provision "shell", path: "provision.sh"
+
+  end
+
+  # Provider Digitalocean
+  config.vm.define "remote" do |remote_config|
+    remote_config.vm.box = "digital_ocean"
+    remote_config.vm.box_url = "https://github.com/smdahlen/vagrant-digitalocean/raw/master/box/digital_ocean.box"
+    remote_config.vm.synced_folder ".", "/vagrant"
+    remote_config.vm.network :forwarded_port, host: 8080, guest: 80
+    remote_config.vm.network :forwarded_port, host: 5433, guest: 5432
+    remote_config.vm.network :forwarded_port, host: 20008, guest: 20008
+    remote_config.vm.network :forwarded_port, host: 20009, guest: 20009
+    remote_config.ssh.username = "root"
+    remote_config.ssh.private_key_path = "~/.ssh/id_rsa"
+
+    remote_config.vm.provider :digital_ocean do |provider|
+      provider.ssh_key_name = "your-ssh-key-name"
+      provider.ca_path = "/etc/ssl/certs/ca-certificates.crt"
+      provider.token = "your-api-token"
+      provider.image = "ubuntu-14-04-x64"
+      provider.region = "fra1"
+      provider.size = "8GB"
+    end
+
+    remote_config.vm.provision "shell", path: "provision.sh"
+
+  end
+
+end
