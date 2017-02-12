@@ -3,6 +3,11 @@
 # locale
 update-locale LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8
 
+# Add PostgreSQL PPA
+sudo echo "deb http://apt.postgresql.org/pub/repos/apt/ precise-pgdg main" > /etc/apt/sources.list.d/pgdg.list
+wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | \
+    sudo apt-key add -
+
 # update Repositories:
 apt-get update
 
@@ -23,9 +28,8 @@ apt-get install -y \
     libprotobuf-dev \
     libtokyocabinet-dev \
     libgeos-c1 \
-    postgresql-9.3 \
-    postgresql-9.3-postgis-2.1 \
-    postgresql-contrib
+    postgresql-9.6 \
+    postgresql-9.6-postgis-2.3
 
 # install imposm
 pip install imposm
@@ -43,7 +47,7 @@ apt-get install -y \
     nodejs
 
 # deploy custom pg_hba.conf and restart postgres server:
-ln -s -f /vagrant/config/pg_hba.conf /etc/postgresql/9.3/main/pg_hba.conf
+ln -s -f /vagrant/config/pg_hba.conf /etc/postgresql/9.6/main/pg_hba.conf
 service postgresql restart
 
 # setup database, db user and postgis
