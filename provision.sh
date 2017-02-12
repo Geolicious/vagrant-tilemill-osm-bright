@@ -44,6 +44,7 @@ apt-get update
 apt-get install -y \
     tilemill \
     libmapnik \
+    mapnik-utils \
     nodejs
 
 # deploy custom pg_hba.conf and restart postgres server:
